@@ -6,23 +6,22 @@ const std = @import("std");
 /// [x] use headers
 //
 
-pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Method, header: anytype, body: anytype) ![]u8 {
-    // dumped here at the moment
-    _ = body;
-    _ = header;
+pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Method) ![]u8 {
     // let's begin work
     var client = std.http.Client{
         .allocator = allocator,
     };
-    const uri = try std.Uri.parse(url);
+    const encoded = try std.Uri.escapeQuery(allocator, url);
+    std.debug.print("{s} \n ", .{encoded});
+    const uri = try std.Uri.parse(encoded);
+    std.debug.print("{s} \n ", .{uri});
     var headers = std.http.Headers{ .allocator = allocator };
     defer headers.deinit();
     try headers.append("accept", "*/*");
+    try headers.append("Content-Type", "application/json");
     var req = try client.request(method, uri, headers, .{});
     defer req.deinit();
     try req.start();
-    // ! this is bugging hence the http body will be worked on a later
-    // try req.writer().writeAll("Hello, World!\n");
     try req.finish();
     try req.wait();
     _ = req.response.headers.getFirstValue("content-type") orelse "text/plain";

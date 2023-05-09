@@ -1,4 +1,5 @@
 zig-cache
 zig-out
 tm.txt
-./tm.txt
+test/test.html
+test/js-test.js

@@ -21,11 +21,23 @@ pub const Bot = struct {
         };
     }
     pub fn getUri(self: *const Self, path: []const u8) ![]u8 {
-        var g = try std.mem.join(self.allocator, "", &[_][]const u8{ "https://api.telegram.org/bot", self.token, path });
-        return g;
+        var url = try std.mem.join(self.allocator, "", &[_][]const u8{ "https://api.telegram.org/bot", self.token, path });
+        return url;
     }
-    pub fn sendMessage(self: *const Self) []const u8 {
-        return fetch(self.allocator, self.getUri("/message") catch unreachable, .GET, 1, 2) catch |err| {
+    fn getUriRaw(self: *const Self, a: []const u8, b: []const u8) []const u8 {
+        var url = std.mem.join(self.allocator, "", &[_][]const u8{ a, b }) catch |err| {
+            std.debug.print("{any}", .{err});
+            return "boohoo";
+        };
+        return url;
+    }
+    pub fn sendMessage(self: *const Self, chatId: []const u8, message: []const u8) []const u8 {
+        // joining texts should not be this hard XD
+        var chatp = self.getUriRaw("chat_id=", chatId);
+        var messagep = self.getUriRaw("&text=", message);
+        const pathg = self.getUriRaw("/sendMessage?", chatp);
+        const path = self.getUriRaw(pathg, messagep);
+        return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
             std.debug.print("{any}", .{err});
             return "boohoo";
         };
