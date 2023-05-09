@@ -10,9 +10,10 @@ pub fn main() !void {
     defer gpaallocator.free(buf);
     var fba = std.heap.FixedBufferAllocator.init(buf);
     const allocator = fba.allocator();
-    var token = "yours";
+    var token = "5818432259:AAFN6GGjp1D10-76xMflBTPFdzG-jV9ZGKM";
     const bot = tm.Bot.init(allocator, token);
-    _ = try bot.getMe();
+    var botDet = bot.getMe();
+    std.debug.print("{any}", .{botDet});
     // a basic server
     const port = 8080;
     const listen_address = std.net.Address.parseIp(
@@ -37,6 +38,8 @@ pub fn main() !void {
             \\Hello, World!
             \\
         );
+
+        std.debug.print("\n \n server listed on {any} \n ..", .{conn.address});
         conn.stream.close();
     }
 }

@@ -6,7 +6,7 @@ const std = @import("std");
 /// [x] use headers
 //
 
-pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Method, header: ?.{}, body: ?.{}) ![]u8 {
+pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Method, header: anytype, body: anytype) ![]u8 {
     // dumped here at the moment
     _ = body;
     _ = header;
