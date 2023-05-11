@@ -24,11 +24,8 @@ pub const Bot = struct {
         var url = try std.mem.join(self.allocator, "", &[_][]const u8{ "https://api.telegram.org/bot", self.token, path });
         return url;
     }
-    fn getUriRaw(self: *const Self, a: []const u8, b: []const u8) []const u8 {
-        var url = std.mem.join(self.allocator, "", &[_][]const u8{ a, b }) catch |err| {
-            std.debug.print("{any}", .{err});
-            return "boohoo";
-        };
+    fn getUriRaw(self: *const Self, a: []const u8, b: []const u8) []u8 {
+        var url = std.mem.join(self.allocator, "", &[_][]const u8{ a, b }) catch unreachable;
         return url;
     }
     pub fn sendMessage(self: *const Self, chatId: []const u8, message: []const u8) []const u8 {
@@ -38,10 +35,7 @@ pub const Bot = struct {
         const needle = &[_]u8{' '};
         const repl = &[_]u8{'+'};
         var messagex: []u8 = "";
-        messagex = std.mem.replaceOwned(u8, self.allocator, messagep, needle, repl) catch |err| {
-            std.debug.print("{any}", .{err});
-            return "";
-        };
+        messagex = std.mem.replaceOwned(u8, self.allocator, messagep, needle, repl) catch unreachable;
         const pathg = self.getUriRaw("/sendMessage?", chatp);
         const path = self.getUriRaw(pathg, messagex);
         return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {

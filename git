@@ -17,6 +17,7 @@ echo "this script help clear development files and push to git for no reason!"
 echo ""
 echo  "${cyan} Please wait ...${clear}"
 echo  "${red} deleting project development files${clear}"
+./ro
 echo  "${cyan}running ...${clear}"
 echo ""
 
