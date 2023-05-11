@@ -1,5 +1,5 @@
 ///
-///? All your bots are belong to us
+///? All your bots are belong to us.
 ///
 const std = @import("std");
 const tm = @import("./tmstruct.zig");

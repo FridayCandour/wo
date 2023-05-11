@@ -31,14 +31,21 @@ pub const Bot = struct {
     pub fn sendMessage(self: *const Self, chatId: []const u8, message: []const u8) []const u8 {
         // joining texts should not be this hard XD
         var chatp = self.getUriRaw("chat_id=", chatId);
+        defer self.allocator.free(chatp);
         var messagep = self.getUriRaw("&text=", message);
+        defer self.allocator.free(messagep);
         const needle = &[_]u8{' '};
         const repl = &[_]u8{'+'};
         var messagex: []u8 = "";
         messagex = std.mem.replaceOwned(u8, self.allocator, messagep, needle, repl) catch unreachable;
+        defer self.allocator.free(messagex);
         const pathg = self.getUriRaw("/sendMessage?", chatp);
         const path = self.getUriRaw(pathg, messagex);
-        return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
+        defer self.allocator.free(path);
+        defer self.allocator.free(pathg);
+        const url = self.getUri(path) catch unreachable;
+        defer self.allocator.free(url);
+        return fetch(self.allocator, url, .POST) catch |err| {
             std.debug.print("{any}", .{err});
             return "boohoo";
         };

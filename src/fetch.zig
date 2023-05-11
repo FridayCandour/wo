@@ -12,6 +12,7 @@ pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Met
         .allocator = allocator,
     };
     const encoded = try std.Uri.escapeQuery(allocator, url);
+    defer allocator.free(encoded);
     std.debug.print("{s} \n ", .{encoded});
     const uri = try std.Uri.parse(encoded);
     std.debug.print("{s} \n ", .{uri});
