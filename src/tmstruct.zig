@@ -35,6 +35,10 @@ pub const Bot = struct {
         // joining texts should not be this hard XD
         var chatp = self.getUriRaw("chat_id=", chatId);
         var messagep = self.getUriRaw("&text=", message);
+        var messagex = &[_]u8{' '};
+        const needle = &[_]u8{' '};
+        const repl = &[_]u8{'+'};
+        messagex = std.mem.replace(u8, messagep, needle, repl, messagep);
         const pathg = self.getUriRaw("/sendMessage?", chatp);
         const path = self.getUriRaw(pathg, messagep);
         return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
@@ -42,4 +46,15 @@ pub const Bot = struct {
             return "boohoo";
         };
     }
+    // pub fn startUpdateInterface(self: *const Self, offset: []const u8, limit: []const u8, timeout: []const u8) []const u8 {
+    //     // joining texts should not be this hard XD
+    //     var chatp = self.getUriRaw("/getUpdates?limit=10&offset=0&timeout=0", chatId);
+    //     var messagep = self.getUriRaw("&text=", message);
+    //     const pathg = self.getUriRaw("/sendMessage?", chatp);
+    //     const path = self.getUriRaw(pathg, messagep);
+    //     return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
+    //         std.debug.print("{any}", .{err});
+    //         return "boohoo";
+    //     };
+    // }
 };

@@ -10,7 +10,7 @@ pub fn main() !void {
     defer gpaallocator.free(buf);
     var fba = std.heap.FixedBufferAllocator.init(buf);
     const allocator = fba.allocator();
-    var token = "token";
+    var token = "5818432259:AAFN6GGjp1D10-76xMflBTPFdzG-jV9ZGKM";
     const bot = tm.Bot.init(allocator, token);
     _ = bot.sendMessage("@cradovaframework", "hello people am wo");
     // var botDet = bot.getMe();
