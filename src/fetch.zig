@@ -28,6 +28,6 @@ pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Met
     _ = req.response.headers.getFirstValue("content-type") orelse "text/plain";
     const httpbody = req.reader().readAllAlloc(allocator, 8192) catch unreachable;
     std.debug.print("{s}", .{httpbody});
-    defer allocator.free(httpbody);
+    // defer allocator.free(httpbody);
     return httpbody;
 }

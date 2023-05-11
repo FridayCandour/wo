@@ -14,7 +14,8 @@ pub fn main() !void {
     // const allocator = fba.allocator();
     var token = "xyz";
     const bot = tm.Bot.init(allocator, token);
-    _ = bot.sendMessage("@cradovaframework", "hello people am wo");
+    var a = bot.sendMessage("@cradovaframework", "hello people am wo");
+    allocator.free(a);
     // var botDet = bot.getMe();
     // std.debug.print("{any}", .{botDet});
 }
