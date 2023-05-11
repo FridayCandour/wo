@@ -35,12 +35,15 @@ pub const Bot = struct {
         // joining texts should not be this hard XD
         var chatp = self.getUriRaw("chat_id=", chatId);
         var messagep = self.getUriRaw("&text=", message);
-        var messagex = &[_]u8{' '};
         const needle = &[_]u8{' '};
         const repl = &[_]u8{'+'};
-        messagex = std.mem.replace(u8, messagep, needle, repl, messagep);
+        var messagex: []u8 = "";
+        messagex = std.mem.replaceOwned(u8, self.allocator, messagep, needle, repl) catch |err| {
+            std.debug.print("{any}", .{err});
+            return "";
+        };
         const pathg = self.getUriRaw("/sendMessage?", chatp);
-        const path = self.getUriRaw(pathg, messagep);
+        const path = self.getUriRaw(pathg, messagex);
         return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
             std.debug.print("{any}", .{err});
             return "boohoo";
