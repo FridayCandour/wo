@@ -50,15 +50,20 @@ pub const Bot = struct {
             return "boohoo";
         };
     }
-    // pub fn startUpdateInterface(self: *const Self, offset: []const u8, limit: []const u8, timeout: []const u8) []const u8 {
-    //     // joining texts should not be this hard XD
-    //     var chatp = self.getUriRaw("/getUpdates?limit=10&offset=0&timeout=0", chatId);
-    //     var messagep = self.getUriRaw("&text=", message);
-    //     const pathg = self.getUriRaw("/sendMessage?", chatp);
-    //     const path = self.getUriRaw(pathg, messagep);
-    //     return fetch(self.allocator, self.getUri(path) catch unreachable, .POST) catch |err| {
-    //         std.debug.print("{any}", .{err});
-    //         return "boohoo";
-    //     };
-    // }
+    pub fn startUpdateInterface(self: *const Self) !void {
+        var path = try self.getUri("/getUpdates?limit=10&offset=0&timeout=4");
+        std.debug.print("{s}", .{"wo is polling for updates ... "});
+        while (true) {
+            const data = try fetch(self.allocator, path, .POST);
+            if (@TypeOf(data) == []u8) {
+                try self.proccess(data);
+            }
+            // Delay between requests to avoid hitting API limits
+            std.time.sleep(1000);
+        }
+    }
+    pub fn proccess(self: *const Self, data: []u8) !void {
+        _ = self;
+        std.debug.print("{any}", .{data});
+    }
 };
