@@ -82,21 +82,15 @@ const Config = struct {
     result: []Update,
 };
 
-fn fromJson(x: []const u8, alloc: std.mem.Allocator) !Config {
-    // desirialisation
-    var stream = std.json.TokenStream.init(x);
-    const parsedData = try std.json.parse(Config, &stream, .{ .allocator = alloc });
-    return parsedData;
-}
-
-pub fn proccess(data: []u8) !void {
+pub fn proccess(data: []u8, allocator: std.mem.Allocator) !void {
     // std.debug.print("{any}", .{data});
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    const struc = try fromJson(data, allocator);
-    std.debug.print("\n {any}", .{struc});
+    // desirialisation
+    var stream = std.json.TokenStream.init(data);
+    const struc = try std.json.parse(Config, &stream, .{ .allocator = allocator });
     defer std.json.parseFree(Config, struc, .{ .allocator = allocator });
+    std.debug.print("{any}", .{struc.result});
     try std.testing.expect(struc.ok == true);
+    // std.debug.print("\n {any}", .{struc});
 }
 
 pub const Bot = struct {
@@ -144,11 +138,13 @@ pub const Bot = struct {
     }
     pub fn startUpdateInterface(self: *const Self) !void {
         var path = try self.getUri("/getUpdates?limit=10&offset=0&timeout=4");
-        std.debug.print("{s}", .{"wo is polling for updates ... "});
+        defer self.allocator.free(path);
+        std.debug.print("{s} \n", .{"wo is polling for updates ... "});
         while (true) {
             const data = try fetch(self.allocator, path, .POST);
+            defer self.allocator.free(data);
             if (@TypeOf(data) == []u8) {
-                try proccess(data);
+                try proccess(data, self.allocator);
             }
             // Delay between requests to avoid hitting API limits
             std.time.sleep(1000);
