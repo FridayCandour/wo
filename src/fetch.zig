@@ -7,13 +7,11 @@ const std = @import("std");
 //
 
 pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Method) ![]u8 {
-    // let's begin work
     var client = std.http.Client{
         .allocator = allocator,
     };
     const encoded = try std.Uri.escapeQuery(allocator, url);
     defer allocator.free(encoded);
-    std.debug.print("{s} \n ", .{encoded});
     const uri = try std.Uri.parse(encoded);
     std.debug.print("{s} \n ", .{uri});
     var headers = std.http.Headers{ .allocator = allocator };
@@ -28,6 +26,5 @@ pub fn fetch(allocator: std.mem.Allocator, url: []const u8, method: std.http.Met
     _ = req.response.headers.getFirstValue("content-type") orelse "text/plain";
     const httpbody = req.reader().readAllAlloc(allocator, 8192) catch unreachable;
     std.debug.print("{s}", .{httpbody});
-    // defer allocator.free(httpbody);
     return httpbody;
 }
